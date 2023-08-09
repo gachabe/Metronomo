@@ -1,9 +1,11 @@
 import time
 import pygame
+import threading
 
 
 def cambiar_tono(sonido, factor_tono):
     sonido.set_volume(factor_tono)
+
 def metronomo(tempo, beats_per_measure=4, sound_file="sounds\\sound-1.mp3"):
     pygame.init()
     pygame.mixer.init()
@@ -14,30 +16,38 @@ def metronomo(tempo, beats_per_measure=4, sound_file="sounds\\sound-1.mp3"):
     # Cálculo del tiempo entre clics (en segundos) según el tempo
     interval = 60.0 / tempo
 
-    running = True
     beat_count = 0
 
-    while running:
-        try:
-            if beat_count == 0:
-                cambiar_tono(sound,4.0)
-                sound.play()
-            elif beat_count ==1:
-                cambiar_tono(sound, 0.25)
-                sound.play()
-            else:
-                sound.play()
-            # Contar los beats
-            beat_count += 1
+    # Crear un objeto de bloqueo para controlar la ejecución
+    running_event = threading.Event()
+    running_event.set()  # Inicialmente, permitir la ejecución
 
-            # Si se completa una medida, reiniciar el contador
-            if beat_count == beats_per_measure:
-                beat_count = 0
+    def metronomo_thread():
+        beat_count = 0
+        while running_event.is_set():
+            try:
+                if beat_count == 0:
+                    cambiar_tono(sound, 4.0)
+                    sound.play()
+                elif beat_count == 1:
+                    cambiar_tono(sound, 0.25)
+                    sound.play()
+                else:
+                    sound.play()
 
-            # Esperar antes del próximo clic
-            time.sleep(interval)
+                beat_count += 1
 
-        except KeyboardInterrupt:
-            running = False
+                if beat_count == beats_per_measure:
+                    beat_count = 0
 
-    pygame.quit()
+                time.sleep(interval)
+            except KeyboardInterrupt:
+                break
+
+    # Crear y comenzar el hilo del metrónomo
+    metronomo_thread = threading.Thread(target=metronomo_thread)
+    metronomo_thread.start()
+
+    return running_event
+
+
