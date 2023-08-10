@@ -16,7 +16,7 @@ def metronomo(tempo, beats_per_measure=4, sound_file="sounds\\sound-1.mp3"):
     # Cálculo del tiempo entre clics (en segundos) según el tempo
     interval = 60.0 / tempo
 
-    beat_count = 0
+
 
     # Crear un objeto de bloqueo para controlar la ejecución
     running_event = threading.Event()
