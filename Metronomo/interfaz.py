@@ -5,12 +5,16 @@ from metronomo import metronomo
 
 rboton = 30
 play = ctk.CTkImage(Image.open("image\\play.ico"))
+pause = ctk.CTkImage(Image.open("image\\pause.png"))
 ctk.set_appearance_mode("dark")  # Modes: system (default), light, dark
 ctk.set_default_color_theme("green")  # Themes: blue (default), dark-blue, green
 
 
 app = ctk.CTk()  # create CTk window like you do with the Tk window
+app.title("Metrónomo")
+app.iconbitmap("image\\icono2.ico")
 app.geometry("400x240")
+app.resizable(False,False)
 
 beats = ctk.IntVar(value = 4)
 valor_tempo = ctk.IntVar(value = 50)
@@ -24,9 +28,11 @@ def button_function():
     if play_boton.get():
         prueba[0].clear()
         play_boton.set(False)
+        button.configure(image=play)
     else:
         prueba[0] = metronomo(valor_tempo.get(),beats.get(),sound_file=sonido.get())
         play_boton.set(True)
+        button.configure(image=pause)
 
 
 
